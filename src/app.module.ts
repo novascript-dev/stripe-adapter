@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { StripeModule } from './stripe/stripe.module';
 import { APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { LoggingMiddleware } from './middleware/logging.middleware';
 
 @Module({
   imports: [StripeModule],
@@ -12,4 +13,10 @@ import { ValidationPipe } from '@nestjs/common';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes('stripe'); // Ou rotas específicas do Stripe
+  }
+}
